@@ -1,0 +1,347 @@
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    /* Better shadow */
+    padding: 50px;
+    min-height: 600px;
+    /* Taller */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.title {
+    text-align: center;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: var(--color-text);
+}
+
+/* Steps Indicator */
+.stepsContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 50px;
+    position: relative;
+    padding: 0 10px;
+}
+
+.stepsContainer::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    /* Aligned with circle center */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-gray-medium);
+    z-index: 0;
+}
+
+.step {
+    position: relative;
+    z-index: 1;
+    background-color: white;
+    padding: 0 15px;
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stepActive {
+    color: var(--color-text);
+}
+
+.stepFinished {
+    color: var(--color-accent);
+}
+
+.stepCircle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--color-gray-medium);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: background-color 0.3s;
+}
+
+.stepActive .stepCircle {
+    background-color: var(--color-text);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+    /* Ring effect */
+}
+
+.stepFinished .stepCircle {
+    background-color: var(--color-accent);
+}
+
+/* Form Elements */
+.sectionTitle {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 30px 0 15px 0;
+    border-bottom: 2px solid var(--color-gray-light);
+    padding-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-gray-dark);
+}
+
+.row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 25px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    /* Safety wrap */
+}
+
+.label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-text);
+}
+
+.select,
+.input,
+.textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    background-color: #fafafa;
+    transition: all 0.2s;
+}
+
+.select:focus,
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-text);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* --- DATE & CHIPS SECTION FIX --- */
+.dateWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    overflow-x: hidden;
+    /* Prevent overflow */
+    width: 100%;
+}
+
+.dateChips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    /* Hides scrollbar roughly */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1 1 auto;
+    /* Take available space but allow shrinking */
+    min-width: 200px;
+    /* Minimum width before forcing wrap of next element ideally */
+}
+
+.dateChips::-webkit-scrollbar {
+    display: none;
+}
+
+.chip {
+    flex: 0 0 auto;
+    padding: 10px 20px;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.chip:hover {
+    border-color: var(--color-gray-dark);
+    background-color: var(--color-gray-light);
+}
+
+.chipSelected {
+    background-color: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 10px rgba(197, 160, 89, 0.4);
+}
+
+.chipSelected:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.dateInput {
+    flex: 0 0 auto;
+    max-width: 160px;
+    padding: 10px;
+    border-radius: 30px;
+    /* Match chips */
+    border: 1px solid var(--color-gray-medium);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* Time Grid */
+.timeGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.timeBtn {
+    padding: 12px;
+    border: 1px solid var(--color-gray-medium);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    background: white;
+    transition: all 0.2s;
+}
+
+.timeBtn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.timeBtnSelected {
+    background-color: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
+}
+
+.timeBtnSelected:hover {
+    background-color: var(--color-accent-hover);
+    color: white;
+    transform: none;
+}
+
+/* Navigation */
+.actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-gray-medium);
+}
+
+.btnPrimary {
+    background: var(--gradient-gold);
+    /* Gold Gradient */
+    color: white;
+    padding: 14px 40px;
+    border-radius: 30px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-gold);
+}
+
+.btnPrimary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 160, 23, 0.4);
+    filter: brightness(1.05);
+}
+
+.btnPrimary:disabled {
+    background: var(--color-gray-medium);
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+.btnSecondary {
+    padding: 14px 30px;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: 30px;
+    font-weight: 600;
+    background: transparent;
+    color: var(--color-gray-dark);
+    transition: all 0.2s;
+}
+
+.btnSecondary:hover {
+    border-color: var(--color-text);
+    color: var(--color-text);
+    background-color: white;
+}
+
+/* Zone Selection */
+.zoneGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.zoneBtn {
+    padding: 40px;
+    border: 2px solid var(--color-gray-light);
+    border-radius: var(--radius-lg);
+    font-size: 1.3rem;
+    font-weight: 600;
+    background-color: white;
+    color: var(--color-gray-dark);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.zoneBtn:hover {
+    border-color: var(--color-gray-medium);
+    transform: translateY(-2px);
+}
+
+.zoneBtnSelected {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background-color: rgba(197, 160, 89, 0.03);
+    box-shadow: 0 10px 30px rgba(197, 160, 89, 0.1);
+}
+
+.zoneBtnSelected:hover {
+    border-color: var(--color-accent);
+}
