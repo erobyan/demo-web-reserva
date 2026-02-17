@@ -12,17 +12,30 @@ const Booking = () => {
     const [availability, setAvailability] = useState({ lunch: [], dinner: [] });
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [maxDays, setMaxDays] = useState(15);
 
     // Load availability when Date/People changes (for Step 1)
     useEffect(() => {
         if (state.date && state.people) {
             setLoading(true);
+            setField('time', null); // Reset time when date/people changes
             getAvailability(state.date, state.people)
                 .then(data => {
-                    setAvailability(data);
+                    const options = data.options || [];
+                    const lunch = options.filter(opt => parseInt(opt.start.split(':')[0]) < 17).map(opt => opt.start);
+                    const dinner = options.filter(opt => parseInt(opt.start.split(':')[0]) >= 17).map(opt => opt.start);
+
+                    if (data.latestBookingDays) {
+                        setMaxDays(data.latestBookingDays);
+                    }
+
+                    setAvailability({ lunch, dinner, originalOptions: options });
                     setLoading(false);
                 })
-                .catch(() => setLoading(false));
+                .catch((err) => {
+                    console.error("Failed to load availability", err);
+                    setLoading(false);
+                });
         }
     }, [state.date, state.people]);
 
@@ -42,7 +55,7 @@ const Booking = () => {
     const generateDateChips = () => {
         const dates = [];
         const today = new Date();
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < maxDays; i++) {
             const d = new Date(today);
             d.setDate(today.getDate() + i);
             const dateStr = d.toISOString().split('T')[0];
@@ -63,7 +76,20 @@ const Booking = () => {
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
-            const result = await createBooking(state);
+            const payload = {
+                date: state.date,
+                start: state.time,
+                people: state.people,
+                location: state.zone,
+                customer: {
+                    name: state.name,
+                    email: state.email,
+                    phone: state.phone,
+                },
+                notes: state.notes
+            };
+
+            const result = await createBooking(payload);
             if (result.success) {
                 navigate('/confirmacion');
             }
@@ -108,6 +134,7 @@ const Booking = () => {
                 </div>
 
                 {/* Step 1: Find Table */}
+                {/* Step 1: Find Table */}
                 {state.step === 1 && (
                     <div className="animation-fade-in">
                         <div className={styles.row}>
@@ -125,24 +152,16 @@ const Booking = () => {
                             </div>
                             <div style={{ flex: 2, minWidth: 0 }}>
                                 <label className={styles.label}>Fecha</label>
-                                <div className={styles.dateWrapper}>
-                                    <div className={styles.dateChips}>
-                                        {generateDateChips().map(({ dateStr, dayName }) => (
-                                            <button
-                                                key={dateStr}
-                                                className={`${styles.chip} ${state.date === dateStr ? styles.chipSelected : ''}`}
-                                                onClick={() => handleDateSelect(dateStr)}
-                                            >
-                                                {dayName}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <input
-                                        type="date"
-                                        className={`${styles.input} ${styles.dateInput}`}
-                                        value={state.date || ''}
-                                        onChange={(e) => handleDateSelect(e.target.value)}
-                                    />
+                                <div className={styles.dateChips}>
+                                    {generateDateChips().map(({ dateStr, dayName }) => (
+                                        <button
+                                            key={dateStr}
+                                            className={`${styles.chip} ${state.date === dateStr ? styles.chipSelected : ''}`}
+                                            onClick={() => handleDateSelect(dateStr)}
+                                        >
+                                            {dayName}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -155,7 +174,10 @@ const Booking = () => {
                                         <button
                                             key={time}
                                             className={`${styles.timeBtn} ${state.time === time ? styles.timeBtnSelected : ''}`}
-                                            onClick={() => setField('time', time)}
+                                            onClick={() => {
+                                                setField('time', time);
+                                                setField('zone', null);
+                                            }}
                                         >
                                             {time}
                                         </button>
@@ -168,7 +190,10 @@ const Booking = () => {
                                         <button
                                             key={time}
                                             className={`${styles.timeBtn} ${state.time === time ? styles.timeBtnSelected : ''}`}
-                                            onClick={() => setField('time', time)}
+                                            onClick={() => {
+                                                setField('time', time);
+                                                setField('zone', null);
+                                            }}
                                         >
                                             {time}
                                         </button>
@@ -230,18 +255,20 @@ const Booking = () => {
                     <div className="animation-fade-in">
                         <h3 className={styles.sectionTitle}>Selecciona Zona</h3>
                         <div className={styles.zoneGrid}>
-                            <button
-                                className={`${styles.zoneBtn} ${state.zone === 'Sala' ? styles.zoneBtnSelected : ''}`}
-                                onClick={() => setField('zone', 'Sala')}
-                            >
-                                🏠 Sala
-                            </button>
-                            <button
-                                className={`${styles.zoneBtn} ${state.zone === 'Terraza' ? styles.zoneBtnSelected : ''}`}
-                                onClick={() => setField('zone', 'Terraza')}
-                            >
-                                🌿 Terraza
-                            </button>
+                            {availability.originalOptions
+                                ? availability.originalOptions.find(opt => opt.start === state.time)?.locations.map(loc => (
+                                    <button
+                                        key={loc}
+                                        className={`${styles.zoneBtn} ${state.zone === loc ? styles.zoneBtnSelected : ''}`}
+                                        onClick={() => setField('zone', loc)}
+                                    >
+                                        {loc === 'Sala' ? '🏠 Sala' : (loc === 'Terraza' ? '🌿 Terraza' : loc)}
+                                    </button>
+                                ))
+                                : (
+                                    <p>No hay zonas disponibles para esta hora.</p>
+                                )
+                            }
                         </div>
 
                         <label className={styles.label}>Notas especiales (opcional)</label>
@@ -273,7 +300,7 @@ const Booking = () => {
                 </div>
 
             </div>
-        </div>
+        </div >
     );
 };
 
