@@ -1,8 +1,8 @@
 const GET_AVAILABILITY_URL = "https://getreservationavailability-jom4xg72oa-uc.a.run.app";
 const MAKE_RESERVATION_URL = "https://makereservation-jom4xg72oa-uc.a.run.app";
-export const CAPACITY_ORG_ID = "XXkBVWWlG8493U7Z4Gxc";
-
 const GET_RESERVATION_METADATA_URL = "https://getreservationmetadata-jom4xg72oa-uc.a.run.app";
+export const CAPACITY_ORG_ID = "KbCF4LQ52X9JQ2tUvcrC";
+
 
 export const getAvailability = async (date, people) => {
   console.log(`[API] Checking availability for ${date} with ${people} people...`);
@@ -63,4 +63,3 @@ export const createBooking = async (bookingData) => {
     throw error;
   }
 };
-
