@@ -1,6 +1,8 @@
 const GET_AVAILABILITY_URL = "https://getreservationavailability-jom4xg72oa-uc.a.run.app";
 const MAKE_RESERVATION_URL = "https://makereservation-jom4xg72oa-uc.a.run.app";
-export const CAPACITY_ORG_ID = "qcIsEczm9IrT0xPhbRFw";
+export const CAPACITY_ORG_ID = "XXkBVWWlG8493U7Z4Gxc";
+
+const GET_RESERVATION_METADATA_URL = "https://getreservationmetadata-jom4xg72oa-uc.a.run.app";
 
 export const getAvailability = async (date, people) => {
   console.log(`[API] Checking availability for ${date} with ${people} people...`);
@@ -20,6 +22,20 @@ export const getAvailability = async (date, people) => {
     return data;
   } catch (error) {
     console.error("API failed", error);
+    throw error;
+  }
+};
+
+export const getReservationMetadata = async () => {
+  try {
+    const params = new URLSearchParams({
+      orgId: CAPACITY_ORG_ID
+    });
+    const response = await fetch(GET_RESERVATION_METADATA_URL + "?" + params.toString());
+    if (!response.ok) throw new Error("API Error");
+    return await response.json();
+  } catch (error) {
+    console.error("Metadata API failed", error);
     throw error;
   }
 };

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBooking } from '../context/BookingContext';
-import { getAvailability, createBooking } from '../api/bookingApi';
+import { getAvailability, createBooking, getReservationMetadata } from '../api/bookingApi';
 import styles from './Booking.module.css';
 
 const STEPS = ["Encontrar", "Información", "Adicional", "Confirmación"];
@@ -13,6 +13,31 @@ const Booking = () => {
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [maxDays, setMaxDays] = useState(15);
+    const [metadata, setMetadata] = useState(null);
+    const scrollContainerRef = useRef(null);
+
+    // Scroll 200px
+    const scroll = (direction) => {
+        if (scrollContainerRef.current) {
+            const scrollAmount = 200;
+            scrollContainerRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    // Load metadata on mount
+    useEffect(() => {
+        getReservationMetadata()
+            .then(data => {
+                setMetadata(data);
+                if (data.latestBookingDays) {
+                    setMaxDays(data.latestBookingDays);
+                }
+            })
+            .catch(err => console.error("Failed to load metadata", err));
+    }, []);
 
     // Load availability when Date/People changes (for Step 1)
     useEffect(() => {
@@ -25,10 +50,6 @@ const Booking = () => {
                     const lunch = options.filter(opt => parseInt(opt.start.split(':')[0]) < 17).map(opt => opt.start);
                     const dinner = options.filter(opt => parseInt(opt.start.split(':')[0]) >= 17).map(opt => opt.start);
 
-                    if (data.latestBookingDays) {
-                        setMaxDays(data.latestBookingDays);
-                    }
-
                     setAvailability({ lunch, dinner, originalOptions: options });
                     setLoading(false);
                 })
@@ -38,7 +59,6 @@ const Booking = () => {
                 });
         }
     }, [state.date, state.people]);
-
     // Initialize date if empty
     useEffect(() => {
         if (!state.date) {
@@ -59,7 +79,7 @@ const Booking = () => {
             const d = new Date(today);
             d.setDate(today.getDate() + i);
             const dateStr = d.toISOString().split('T')[0];
-            const dayName = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
+            const dayName = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
             dates.push({ dateStr, dayName });
         }
         return dates;
@@ -111,6 +131,15 @@ const Booking = () => {
         return false;
     };
 
+    const getMaxPeople = () => {
+        return metadata?.reservationModel?.maxPeoplePerReservation || 10;
+    };
+
+    const getDayNote = () => {
+        if (!metadata || !metadata.schedule || !state.date) return null;
+        return metadata.schedule[state.date]?.notes || null;
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.card}>
@@ -145,26 +174,50 @@ const Booking = () => {
                                     value={state.people}
                                     onChange={(e) => setField('people', Number(e.target.value))}
                                 >
-                                    {[...Array(10)].map((_, i) => (
+                                    {[...Array(getMaxPeople())].map((_, i) => (
                                         <option key={i + 1} value={i + 1}>{i + 1} Personas</option>
                                     ))}
                                 </select>
                             </div>
                             <div style={{ flex: 2, minWidth: 0 }}>
                                 <label className={styles.label}>Fecha</label>
-                                <div className={styles.dateChips}>
-                                    {generateDateChips().map(({ dateStr, dayName }) => (
-                                        <button
-                                            key={dateStr}
-                                            className={`${styles.chip} ${state.date === dateStr ? styles.chipSelected : ''}`}
-                                            onClick={() => handleDateSelect(dateStr)}
-                                        >
-                                            {dayName}
-                                        </button>
-                                    ))}
+                                <div className={styles.dateScrollWrapper}>
+                                    <button
+                                        type="button"
+                                        className={styles.scrollBtn}
+                                        onClick={() => scroll('left')}
+                                        aria-label="Previous dates"
+                                    >
+                                        ←
+                                    </button>
+                                    <div className={styles.dateChips} ref={scrollContainerRef}>
+                                        {generateDateChips().map(({ dateStr, dayName }) => (
+                                            <button
+                                                key={dateStr}
+                                                className={`${styles.chip} ${state.date === dateStr ? styles.chipSelected : ''}`}
+                                                onClick={() => handleDateSelect(dateStr)}
+                                            >
+                                                {dayName}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className={styles.scrollBtn}
+                                        onClick={() => scroll('right')}
+                                        aria-label="Next dates"
+                                    >
+                                        →
+                                    </button>
                                 </div>
                             </div>
                         </div>
+
+                        {getDayNote() && (
+                            <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '4px', border: '1px solid #ffeeba' }}>
+                                ⚠️ {getDayNote()}
+                            </div>
+                        )}
 
                         {loading ? <p>Cargando disponibilidad...</p> : (
                             <>

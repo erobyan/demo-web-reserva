@@ -157,6 +157,37 @@
     width: 100%;
 }
 
+.dateScrollWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Reduced gap between arrows and list */
+    width: 100%;
+}
+
+.scrollBtn {
+    background: white;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-gray-dark);
+    transition: all 0.2s;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding-bottom: 2px; /* Visual center adjustment */
+}
+
+.scrollBtn:hover {
+    background-color: var(--color-gray-light);
+    border-color: var(--color-gray-dark);
+    color: var(--color-text);
+}
+
 .dateChips {
     display: flex;
     gap: 8px;
@@ -165,10 +196,11 @@
     /* Hides scrollbar roughly */
     scrollbar-width: none;
     -ms-overflow-style: none;
-    flex: 1 1 auto;
-    /* Take available space but allow shrinking */
-    min-width: 200px;
-    /* Minimum width before forcing wrap of next element ideally */
+    flex: 1;
+    /* Take available space */
+    min-width: 0;
+    /* Allow shrinking */
+    scroll-behavior: smooth;
 }
 
 .dateChips::-webkit-scrollbar {
