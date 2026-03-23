@@ -7,7 +7,7 @@ const Landing = () => {
     return (
         <div className={styles.container}>
             <section className={styles.hero}>
-                <h1 className={styles.title}>DEMO RESTAURANT</h1>
+                <h1 className={styles.title}>DEMO RESTAURANT TEST</h1>
                 <p className={styles.subtitle}>
                     Esta es una demostración técnica para probar el flujo de reservas online.
                     Experimenta nuestro sistema de gestión simple y elegante.

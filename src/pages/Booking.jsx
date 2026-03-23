@@ -143,7 +143,7 @@ const Booking = () => {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <h2 className={styles.title}>DEMO RESTAURANT</h2>
+                <h2 className={styles.title}>DEMO RESTAURANT TEST</h2>
 
                 {/* Steps Indicator */}
                 <div className={styles.stepsContainer}>
